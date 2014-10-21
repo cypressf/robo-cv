@@ -5,6 +5,7 @@ import sys
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Image
 import cv_bridge
+import cv2
 
 
 class Controller:
@@ -12,11 +13,21 @@ class Controller:
         rospy.init_node('controller', anonymous=True)
         self.pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.sub = None
+        self.bridge = cv_bridge.CvBridge()
         self.running = False
         signal.signal(signal.SIGINT, self.signal_handler)
 
-    def image_received(self, img):
-        rospy.loginfo("Image received! %s" % str(img))
+    def image_received(self, image_message):
+        """
+        Process image and set the desired cmd_vel
+        """
+        # Convert the image message to something usable by opencv
+        # http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython
+        # Note that mono8 and bgr8 are the two image encodings expected by most OpenCV functions.
+        cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="bgr8")
+        rows, cols, channels = cv_image.shape
+        cv2.imshow("Image window", cv_image)
+        cv2.waitKey(3)
 
     def move(self):
         return Twist()
@@ -24,6 +35,7 @@ class Controller:
     def signal_handler(self, signal, frame):
         self.running = False
         self.pub.publish(Twist())
+        cv2.destroyAllWindows()
         sys.exit(0)
 
     def run(self):
