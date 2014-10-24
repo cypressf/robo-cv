@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import cv2
 import numpy as np
+import rospy
 
 
 def extract_data(cv_image):
@@ -11,5 +12,10 @@ def extract_data(cv_image):
     :returns data: a numpy array of data we care about
     """
     rows, cols, channels = cv_image.shape
-    # TODO
-    return np.array([1,2,3])
+    left_half = cv_image[:, :(cols / 2), 2]
+    right_half = cv_image[:, (cols / 2):, 2]
+    left_sum = np.sum(left_half, 1)
+    right_sum = np.sum(right_half, 1)
+    diff = left_sum - right_sum
+    rospy.loginfo(diff.to)
+    return diff
