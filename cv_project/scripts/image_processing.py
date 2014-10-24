@@ -17,5 +17,4 @@ def extract_data(cv_image):
     left_sum = np.sum(left_half, 1)
     right_sum = np.sum(right_half, 1)
     diff = left_sum - right_sum
-    rospy.loginfo(diff.to)
     return diff
