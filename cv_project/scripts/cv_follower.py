@@ -3,22 +3,24 @@ import rospy
 import signal
 import sys
 from sklearn.linear_model import Ridge
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Vector3
 from sensor_msgs.msg import Image
 import cv_bridge
 from image_processing import extract_data
 import cv2
+import pickle
 
 
 class Controller:
-    def __init__(self):
+    def __init__(self, saved_fit_path="saved_fit.txt"):
         rospy.init_node('controller', anonymous=True)
         self.pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.sub = None
         self.bridge = cv_bridge.CvBridge()
         self.running = False
         self.cmd_vel = Twist()
-        self.clf = Ridge(alpha=1.0)
+        with open(saved_fit_path, 'r') as f:
+            self.clf = pickle.load(f)
         # TODO: collect data using a training set, and load this data
         # clf.fit(X,  y) # X and y are input data that we will create by training
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -31,11 +33,10 @@ class Controller:
         # http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython
         # Note that mono8 and bgr8 are the two image encodings expected by most OpenCV functions.
         cv_image = self.bridge.imgmsg_to_cv2(image_message, desired_encoding="bgr8")
-        X = extract_data(cv_image)
-        # velocity = self.clf.predict(X) # TODO make our prediction based on our ridge regression
-        self.cmd_vel = Twist()  # TODO set this based on the ridge prediction
-        cv2.imshow("Image window", cv_image)
-        cv2.waitKey(3)
+        image_data = extract_data(cv_image)
+        linear_velocity, angular_velocity = self.clf.predict(image_data)
+        self.cmd_vel = Twist(linear=Vector3(x=linear_velocity), angular=Vector3(z=angular_velocity))
+        rospy.loginfo(self.cmd_vel)
 
     def signal_handler(self, signal, frame):
         self.running = False
@@ -52,8 +53,11 @@ class Controller:
             rate.sleep()
 
 if __name__ == "__main__":
-    try:
+    if len(sys.argv) > 1:
+        controller = Controller(sys.argv[1])
+    else:
         controller = Controller()
+    try:
         controller.run()
     except rospy.ROSInterruptException:
         pass
