@@ -14,6 +14,11 @@ def extract_data(cv_image):
 
 
 def hsv_test(cv_image):
+    """
+    Mask the image so only blue things show up (within a range of blues), then add the
+    intensities of the pixels in all columns to get a vector of values that represents
+    the blueness across the horizontal axis of the image.
+    """
     hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
     # define range of blue color in HSV
@@ -24,7 +29,6 @@ def hsv_test(cv_image):
     mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
 
     # Bitwise-AND mask and original image
-    res = cv2.bitwise_and(cv_image, cv_image, mask=mask)
-    cv2.imshow('res', res)
-    cv2.waitKey(5) & 0xFF
-    return np.array([1, 2, 3])
+    mask_results = cv2.bitwise_and(cv_image, cv_image, mask=mask)
+    h, s, v = cv2.split(mask_results)
+    return np.array(np.sum(v, axis=0))
