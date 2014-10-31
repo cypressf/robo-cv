@@ -18,8 +18,14 @@ mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
 kernel = np.ones((6,6),np.uint8) #make 5 by 5 kernal size filter
 dilated = cv2.dilate(mask,kernel,iterations = 1)
 
+contours,hierarchy = cv2.findContours(dilated, 1, 2)
+
+cnt = contours[0]
+M = cv2.moments(cnt)
+print M
+
 cv2.imshow('img',image)
-cv2.imshow('dilated image', dilated)
+#cv2.imshow('dilated image', dilated)
 
 cv2.imshow('mask',mask)
 cv2.waitKey(0)
