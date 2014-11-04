@@ -38,6 +38,6 @@ When it's done processing, it will prompt you for a file to save your ridge regr
 rosrun cv_project cv_follower.py [PATH_TO_RIDGE_REGRESSION_SAVE_FILE]
 ```
 
-## How it works: neural Networks
+## How it works: Neural Networks
 
 Neural networks are modeled after how a human brain works. This approach was developed because human brains are very good at processing certain tasks which are challenging for traditional, mathematical based algorythm approaches. Inputs are weighted, then summed at a neuron. Then the neuron puts the result of this through a step function. If the output is over a threshold, if fires off an electrical signal; if not, it does not fire. A good tutorial for understanding neural networks is [here](http://www.theprojectspot.com/tutorial-post/introduction-to-artificial-neural-networks-part-1/7).
