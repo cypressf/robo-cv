@@ -10,7 +10,7 @@ def extract_data(cv_image):
     :param cv_image: an opencv image to process
     :returns data: a numpy array of data we care about
     """
-    return hsv_test(cv_image)
+    return imageProcessRedCups(cv_image)
 
 
 def hsv_test(cv_image):
@@ -35,11 +35,10 @@ def hsv_test(cv_image):
     cv2.imshow("image", mask_results)
     cv2.waitKey(3)
     return np.array(np.sum(v, axis=0))
-    
-def imageProcessRedCups(imageName):
+
+
+def imageProcessRedCups(image):
     '''Process an input image with Open CV methods to focus on red cup like shapes'''
-    image=imageName
-    image = cv2.imread(image,cv2.IMREAD_COLOR)
     image=cv2.medianBlur(image,9) #kernal size must be odd
     image=cv2.bilateralFilter(image,9,75,75)
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV) #convert to hsv image
@@ -59,15 +58,16 @@ def imageProcessRedCups(imageName):
 
     cnt = contours[0]
     M = cv2.moments(cnt)
-    print M
+    #print M
 
-    cv2.imshow('img',image)
+    #cv2.imshow('img',image)
     #cv2.imshow('dilated image', dilated)
 
     cv2.imshow('mask',mask)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.waitKey(3) #cv2.waitKey(0)
+
     
     
 if __name__=='__main__':
-    imageProcessRedCups('blurrySoloCups.jpg')
+    image = cv2.imread('blurrySoloCups.jpg',cv2.IMREAD_COLOR)
+    imageProcessRedCups(image)
