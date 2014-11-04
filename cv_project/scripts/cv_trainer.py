@@ -9,8 +9,6 @@ import pickle
 import sys
 import os
 
-SAVE_FILE_NAME = "saved_fit.txt"
-
 
 def twist_to_nparray(msg):
     return np.array([msg.linear.x, msg.angular.z])
@@ -24,8 +22,8 @@ def find_best_fit(bagfiles):
         most_recent_cmd_vel = None
         bag = rosbag.Bag(bagfile_path)
         for topic, msg, t in bag.read_messages(topics=['/camera/image_raw/compressed', '/cmd_vel'], ):
-            if topic == "/cmd_vel":
-                most_recent_cmd_vel = msg
+            if topic == "/cmd_vel" and (most_recent_cmd_vel is not None or msg != Twist()):
+                    most_recent_cmd_vel = msg
             elif topic == "/camera/image_raw/compressed" and most_recent_cmd_vel is not None:
                 np_arr = np.fromstring(msg.data, np.uint8)
                 cv_image = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
@@ -43,5 +41,6 @@ if __name__ == "__main__":
         bagfiles = [os.path.join(bagfile_directory, file) for file in os.listdir(bagfile_directory) if file.endswith(".bag")]
         clf = find_best_fit(bagfiles)
 
-        with open(SAVE_FILE_NAME, 'w') as f:
+        save_file_name = raw_input("enter filename to save processed data: ")
+        with open(save_file_name, 'w') as f:
             pickle.dump(clf, f)
