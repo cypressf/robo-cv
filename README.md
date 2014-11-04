@@ -11,18 +11,18 @@ rosrun neto_node bringup.launch host=[IP_ADDRESS_OF_PI]
 ```
 
 To take the stored training data (.bag files collected from running the robot the way we want it to run) and use it to train the robot with the latest image processing methods implemented and available:
-'''bash
+```bash
 
 ```
 
 To record new training data to teach the robot new behavors, you'll need to pilot the robot via teleop so it does the behavior you want it to do. For instance, if you wanted it to run away from blue cups, you'd need to pilot it so it ran away from blue cups. 4-10 iterations of this is reasonable.
 To do this, first run the teleop node:
-'''bash 
+```bash 
 rosrun teleop_twist_keyboard teleop_twist_keyboard.py
 ```
 
 Then, begin collecting data by running:
-'''bash
+```bash
 rosbag ... CYPRESS HLP!!
-'''
+```
 Note, as soon as collection begins (or as soon as you hit enter in the terminal for this command), you should begin moving the robot. Otherwise, you will need to cut the .bag file recorded by the robot. However, we have implemented functionality which cuts the begining of any .bag file used for training if the velocity is equal to zero. This means that the training data will only begin taking effect once you start moving the robot. 
