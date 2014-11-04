@@ -2,6 +2,12 @@
 import cv2
 import numpy as np
 
+def closeImages():
+    if __name__=='__main__':
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    else:
+        cv2.waitKey(3)
 
 def extract_data(cv_image):
     """
@@ -38,24 +44,28 @@ def hsv_test(cv_image):
 
 
 def imageProcessRedCups(image):
-    '''Process an input image with Open CV methods to focus on red cup like shapes'''
+    '''Process an input image with Open CV methods to focus on red cup like shapes
+    
+    INPUT: image
+    OUTPUT: binary image better suited for prcessing with the ridge regression'''
+    
+    #do processing on the image while it's still in color
     image=cv2.medianBlur(image,9) #kernal size must be odd
     image=cv2.bilateralFilter(image,9,75,75)
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV) #convert to hsv image
 
     # define range of blue color in HSV
-    lower_blue = np.array([0,50,50])
-    upper_blue = np.array([50,255,255])
+    lower_red = np.array([0,50,50])
+    upper_red = np.array([50,255,255])
 
-    # Threshold the HSV image to get only blue colors
-    mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
+    # Threshold the HSV image to get only red colors
+    mask = cv2.inRange(hsv_image, lower_red, upper_red)
 
-    #erode image to filter it:
+    #dialate image to filter it:
     kernel = np.ones((6,6),np.uint8) #make 5 by 5 kernal size filter
     dilated = cv2.dilate(mask,kernel,iterations = 1)
 
     contours,hierarchy = cv2.findContours(dilated, 1, 2)
-
     cnt = contours[0]
     M = cv2.moments(cnt)
     #print M
@@ -64,7 +74,7 @@ def imageProcessRedCups(image):
     #cv2.imshow('dilated image', dilated)
 
     cv2.imshow('mask',mask)
-    cv2.waitKey(3) #cv2.waitKey(0)
+    closeImages()
 
     
     
