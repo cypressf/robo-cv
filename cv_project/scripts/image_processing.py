@@ -31,4 +31,7 @@ def hsv_test(cv_image):
     # Bitwise-AND mask and original image
     mask_results = cv2.bitwise_and(cv_image, cv_image, mask=mask)
     h, s, v = cv2.split(mask_results)
+
+    cv2.imshow("image", mask_results)
+    cv2.waitKey(3)
     return np.array(np.sum(v, axis=0))
