@@ -5,7 +5,7 @@ Neural networks are modeled after how a human brain works. This approach was dev
 ## Running the Code
 
 To start ROS and connect to the Neato:
-'''bash
+```bash
 roscore 
 rosrun neto_node bringup.launch host=[IP_ADDRESS_OF_PI]
 ```
