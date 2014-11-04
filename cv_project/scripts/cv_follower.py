@@ -21,8 +21,6 @@ class Controller:
         self.cmd_vel = Twist()
         with open(saved_fit_path, 'r') as f:
             self.clf = pickle.load(f)
-        # TODO: collect data using a training set, and load this data
-        # clf.fit(X,  y) # X and y are input data that we will create by training
         signal.signal(signal.SIGINT, self.signal_handler)
 
     def image_received(self, image_message):
