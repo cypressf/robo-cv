@@ -25,6 +25,11 @@ def extract_data(cv_image):
     return imageProcessRedCups(cv_image)
 
 
+def mouse_event(event,x,y,flag,im):
+    global colorImgInput
+    if event == cv2.EVENT_FLAG_LBUTTON:
+        print colorImgInput[y,x,:]
+
 def hsv_test(cv_image):
     """
     Mask the image so only blue things show up (within a range of blues), then add the
@@ -50,11 +55,9 @@ def hsv_test(cv_image):
 
 def colorImgPreProcess(image):
     #do processing on the image while it's still in color
-    image=cv2.medianBlur(image,7) #kernal size must be odd
-    image=cv2.bilateralFilter(image,9,75,75)
+#    image=cv2.medianBlur(image,7) #kernal size must be odd
+#    image=cv2.bilateralFilter(image,9,75,75)
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV) #convert to hsv image
-    for i in range(hsv_image.shape[0]):
-        print hsv_image[i,:,0]
 
     cv2.imshow('img',image)
     closeImages()
@@ -87,18 +90,20 @@ def imageProcessRedCups(image):
     OUTPUT: binary image better suited for prcessing with the ridge regression'''
     
     #pre-process image while it's in color
+    global colorImgInput
     colorImgInput=colorImgPreProcess(image) 
     
     # define range of red color for HSV
     lower_red1 = np.array([0,50,50])
-    upper_red1 = np.array([70,105,85])
+    upper_red1 = np.array([40,105,85])
     lower_red2 = np.array([220,0,0])
     upper_red2 = np.array([255,255,255])
 
     # Threshold the HSV image to get only red colors
     mask1 = cv2.inRange(colorImgInput, lower_red1, upper_red1)
-    mask2 = cv2.inRange(colorImgInput, lower_red2, upper_red2)
-    mask=cv2.add(mask1,mask2)
+    #mask2 = cv2.inRange(colorImgInput, lower_red2, upper_red2)
+   # mask=cv2.add(mask1,mask2)
+    mask=mask1
 
     #dialate image to filter it:
     kernel = np.ones((6,6),np.uint8) #make 5 by 5 kernal size filter
@@ -113,8 +118,9 @@ def imageProcessRedCups(image):
     cv2.drawContours(mask, contours, -1, (40,255,0), 3)
 
     cv2.imshow('mask 1',mask1)
-    cv2.imshow('mask 2',mask2)
-    cv2.imshow('mask',mask)
+    cv2.setMouseCallback("mask 1",mouse_event,[])
+   # cv2.imshow('mask 2',mask2)
+   # cv2.imshow('mask',mask)
 #    cv2.imshow('drawn contors', contors)
     #cv2.imshow('dilated image', dilated)
 
