@@ -7,7 +7,7 @@ Neural networks are modeled after how a human brain works. This approach was dev
 To start ROS and connect to the Neato:
 ```bash
 roscore 
-rosrun neto_node bringup.launch host=[IP_ADDRESS_OF_PI]
+rosrun neato_node bringup.launch host=[IP_ADDRESS_OF_PI]
 ```
 
 To take the stored training data (.bag files collected from running the robot the way we want it to run) and use it to train the robot with the latest image processing methods implemented and available:
