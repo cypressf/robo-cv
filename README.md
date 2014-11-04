@@ -23,6 +23,6 @@ rosrun teleop_twist_keyboard teleop_twist_keyboard.py
 
 Then, begin collecting data by running:
 ```bash
-rosbag ... CYPRESS HLP!!
+rosbag record /scan /camera/image_raw/compressed /odom /tf /tf_static /cmd_vel
 ```
 Note, as soon as collection begins (or as soon as you hit enter in the terminal for this command), you should begin moving the robot. Otherwise, you will need to cut the .bag file recorded by the robot. However, we have implemented functionality which cuts the begining of any .bag file used for training if the velocity is equal to zero. This means that the training data will only begin taking effect once you start moving the robot. 
