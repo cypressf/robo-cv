@@ -23,7 +23,10 @@ def find_best_fit(bagfiles):
         bag = rosbag.Bag(bagfile_path)
         for topic, msg, t in bag.read_messages(topics=['/camera/image_raw/compressed', '/cmd_vel'], ):
             if topic == "/cmd_vel" and ((most_recent_cmd_vel is not None) or msg.linear.x>0):
-                most_recent_cmd_vel = msg
+                if most_recent_cmd_vel is None and msg.linear.x > 0:
+                    most_recent_cmd_vel = msg
+                elif most_recent_cmd_vel is not None and msg.linear.x == 0 and msg.angular.z == 0:
+                    most_recent_cmd_vel = None
             elif topic == "/camera/image_raw/compressed" and most_recent_cmd_vel is not None:
                 np_arr = np.fromstring(msg.data, np.uint8)
                 cv_image = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
@@ -34,13 +37,12 @@ def find_best_fit(bagfiles):
     return clf
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Must give me the path to your bagfile directory")
+    if len(sys.argv) < 3:
+        print("Must give me the path to your bagfile directory and ridge regression save file")
     else:
         bagfile_directory = sys.argv[1]
+        ridge_save_file = sys.argv[2]
         bagfiles = [os.path.join(bagfile_directory, file) for file in os.listdir(bagfile_directory) if file.endswith(".bag")]
         clf = find_best_fit(bagfiles)
-
-        save_file_name = raw_input("enter filename to save processed data: ")
-        with open(save_file_name, 'w') as f:
+        with open(ridge_save_file, 'w') as f:
             pickle.dump(clf, f)
