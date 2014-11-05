@@ -15,6 +15,17 @@ def closeImages():
     else:
         cv2.waitKey(3)
 
+def returnImg(return_img):
+    '''Returns the image as a numpy matrix after closing all open images 
+    
+    INPUT: image to be returned
+    OUTPUT: singular value matrix representing the image'''
+    closeImages()
+    imageArray = np.asarray(return_img)
+    imageMatrix = np.matrix(imageArray)
+    return np.linalg.svd(imageMatrix,compute_uv=0) #setting compute_uv to zero only computes the singular value
+    #TODO: check if singular matrix is what we need/want
+
 def extract_data(cv_image):
     """
     Given a computer vision image, extract the data that we care about.
@@ -26,6 +37,8 @@ def extract_data(cv_image):
 
 
 def mouse_event(event,x,y,flag,im):
+    '''Print the pixel values  of the image where it's clicked on.
+    '''
     global colorImgInput
     if event == cv2.EVENT_FLAG_LBUTTON:
         print colorImgInput[y,x,:]
@@ -54,14 +67,19 @@ def hsv_test(cv_image):
     return np.array(np.sum(v, axis=0))
 
 def colorImgPreProcess(image):
+    '''Prepare images to be analyzed in binary form by appling generic filtering.
+    This makes them easier to work with and prettier.
+    
+    INPUT: image for pre-processing. Should be in color, though b&w ahould work.
+    OUTPUT: returns a RGB image which has been filtered and looks nicer.
+    '''
     #do processing on the image while it's still in color
-#    image=cv2.medianBlur(image,7) #kernal size must be odd
-#    image=cv2.bilateralFilter(image,9,75,75)
-    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV) #convert to hsv image
+    image=cv2.medianBlur(image,7) #kernal size must be odd
+    image=cv2.bilateralFilter(image,9,75,75)
 
-    cv2.imshow('img',image)
-    closeImages()
-    return hsv_image
+#    cv2.imshow('img',image)
+#    closeImages()
+    return image
     
 def imageProcessBlueCups(image):
     '''Process an input image with Open CV methods to focus on blue cup like shapes
@@ -87,11 +105,11 @@ def imageProcessRedCups(image):
     '''Process an input image with Open CV methods to focus on red cup like shapes
     
     INPUT: image
-    OUTPUT: binary image better suited for prcessing with the ridge regression'''
-    
+    OUTPUT: matrix of singular values of the binary image for prcessing 
+        with the ridge regression'''
+#    global colorImgInput #from mouse clicking stuff
     #pre-process image while it's in color
-    global colorImgInput
-    colorHSVImgInput=colorImgPreProcess(image) 
+    image=colorImgPreProcess(colorImgPreProcess(image)) #run color filtering 2x
     
     # define range of red color for HSV
     lower_redColor = np.array([30,30,160])
@@ -106,12 +124,9 @@ def imageProcessRedCups(image):
 
 #    cv2.setMouseCallback("color mask",mouse_event,[])
     cv2.imshow("color mask",RGBMask)
-#    cv2.imshow('drawn contors', contors)
     cv2.imshow('dilated image', rgbDilated)
 
-    closeImages()
-    dilatedImageArray=np.asarray(rgbDilated)
-    return np.matrix(dilatedImageArray)
+    return returnImg(rgbDilated)
 
     
     
