@@ -13,20 +13,38 @@ def extract_data(cv_image):
     return imageProcessRedCups(cv_image)
 
 
-def hsv_test(cv_image):
-    """
-    Mask the image so only blue things show up (within a range of blues), then add the
-    intensities of the pixels in all columns to get a vector of values that represents
-    the blueness across the horizontal axis of the image.
-    """
-    hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-
+def hsv_test_blue(cv_image):
     # define range of blue color in HSV
     lower_blue = np.array([90, 10, 0])
     upper_blue = np.array([160, 255, 255])
+    return hsv_test(cv_image, lower_blue, upper_blue)
 
-    # Threshold the HSV image to get only blue colors
-    mask = cv2.inRange(hsv_image, lower_blue, upper_blue)
+
+def hsv_test_red(cv_image):
+    # define range of red color in HSV
+    lower_red = np.array([150, 30, 30])
+    upper_red = np.array([200, 255, 255])
+    return hsv_test(cv_image, lower_red, upper_red)
+
+
+def normalize(np_array):
+    norm = np.linalg.norm(np_array)
+    if norm == 0:
+        return norm
+    else:
+        return np_array / norm
+
+
+def hsv_test(cv_image, lower_color, upper_color):
+    """
+    Mask the image so only certain colors show up (within a range of colors), then add the
+    intensities of the pixels in all columns to get a vector of values that represents
+    the intensities of that color across the horizontal axis of the image.
+    """
+    hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+
+    # Threshold the HSV image to get only a certain range of colors
+    mask = cv2.inRange(hsv_image, lower_color, upper_color)
 
     # Bitwise-AND mask and original image
     mask_results = cv2.bitwise_and(cv_image, cv_image, mask=mask)
@@ -34,7 +52,7 @@ def hsv_test(cv_image):
 
     cv2.imshow("image", mask_results)
     cv2.waitKey(3)
-    return np.array(np.sum(v, axis=0))
+    return normalize(np.array(np.sum(v, axis=0)))
 
 
 def imageProcessRedCups(image):
