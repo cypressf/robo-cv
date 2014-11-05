@@ -91,34 +91,38 @@ def imageProcessRedCups(image):
     
     #pre-process image while it's in color
     global colorImgInput
-    colorImgInput=colorImgPreProcess(image) 
+    colorHSVImgInput=colorImgPreProcess(image) 
     
     # define range of red color for HSV
-    lower_red1 = np.array([0,50,50])
-    upper_red1 = np.array([40,105,85])
-    lower_red2 = np.array([220,0,0])
-    upper_red2 = np.array([255,255,255])
+    lower_redHSV = np.array([0,50,50])
+    upper_redHSV = np.array([40,105,85])
+    
+    lower_redColor = np.array([30,30,160])
+    upper_redColor = np.array([70,80,230])
 
     # Threshold the HSV image to get only red colors
-    mask1 = cv2.inRange(colorImgInput, lower_red1, upper_red1)
+    HSVmask = cv2.inRange(colorHSVImgInput, lower_redHSV, upper_redHSV)
+    RGBMask = cv2.inRange(image,lower_redColor,upper_redColor)
     #mask2 = cv2.inRange(colorImgInput, lower_red2, upper_red2)
-   # mask=cv2.add(mask1,mask2)
-    mask=mask1
+#    mask=cv2.add(mask1,mask2)
+
 
     #dialate image to filter it:
     kernel = np.ones((6,6),np.uint8) #make 5 by 5 kernal size filter
-    dilated = cv2.dilate(mask1,kernel,iterations = 1)
+    HSVdilated = cv2.dilate(HSVmask,kernel,iterations = 1)
+    Colordilated = cv2.dilate(ColorMask,kernel,iterations = 1)
 
     #Contor stuff, in dev
-    contours,hierarchy = cv2.findContours(dilated, 1, 2)
-    cnt = contours[0]
-    M = cv2.moments(cnt)
-    print M
+#    contours,hierarchy = cv2.findContours(dilated, 1, 2)
+#    cnt = contours[0]
+#    M = cv2.moments(cnt)
+#    print M
     
-    cv2.drawContours(mask, contours, -1, (40,255,0), 3)
+#    cv2.drawContours(mask, contours, -1, (40,255,0), 3)
 
-    cv2.imshow('mask 1',mask1)
-    cv2.setMouseCallback("mask 1",mouse_event,[])
+    cv2.imshow('mask HSV',HSVmask)
+#    cv2.setMouseCallback("color mask",mouse_event,[])
+    cv2.imshow("color mask",ColorMask)
    # cv2.imshow('mask 2',mask2)
    # cv2.imshow('mask',mask)
 #    cv2.imshow('drawn contors', contors)
