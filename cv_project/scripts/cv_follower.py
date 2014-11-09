@@ -13,6 +13,9 @@ import pickle
 
 class Controller:
     def __init__(self, saved_fit_path="saved_fit.txt"):
+        '''Makes controler node and subscribes to cmd_vel node to control robot.
+        Also loads trainign data
+        '''
         rospy.init_node('controller', anonymous=True)
         self.pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.sub = None
@@ -25,7 +28,7 @@ class Controller:
 
     def image_received(self, image_message):
         """
-        Process image and set the desired cmd_vel
+        Process image from camera and set the desired cmd_vel
         """
         # Convert the image message to something usable by opencv
         # http://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython
@@ -37,12 +40,16 @@ class Controller:
         rospy.loginfo(self.cmd_vel)
 
     def signal_handler(self, signal, frame):
+        '''Shutdown script in case of keyboard interupt. 
+        '''
         self.running = False
         self.pub.publish(Twist())
         cv2.destroyAllWindows()
         sys.exit(0)
 
     def run(self):
+        '''Get camera images and publish the current, set point velocity
+        '''
         self.running = True
         self.sub = rospy.Subscriber('camera/image_raw', Image, self.image_received)
         rate = rospy.Rate(20)
