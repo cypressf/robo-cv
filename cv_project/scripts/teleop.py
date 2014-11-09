@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+#We pulled this from Cypress' warmup project making it rather bloated 
+#for just driving around and collecting data. However, that's all we 
+#used it for. 
+
 import rospy
 
 from geometry_msgs.msg import Twist, Vector3
@@ -20,6 +24,8 @@ WALL_FOLLOW_MEASUREMENT_WIDTH = 1/32.0 * TAU
 WALL_FOLLOW_DISTANCE = 1.0
 
 def degrees(radians):
+    '''Convert to radians from degrees.
+    '''
     radians %= TAU
     degree_index = math.degrees(radians)
     return int(degree_index)
