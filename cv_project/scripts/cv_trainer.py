@@ -11,10 +11,18 @@ import os
 
 
 def twist_to_nparray(msg):
+    '''Convert ROS twist messages into Numpy arrays
+    
+    OUTPUT: Numpy array of the Twist linear and angular velocities
+    '''
     return np.array([msg.linear.x, msg.angular.z])
 
 
 def find_best_fit(bagfiles):
+    '''Crop ROS  bag files at begining and end to only use the portion 
+    in which the robot is moving. 
+    Fit the Ridge regression to these cropped bag files. 
+    '''
     clf = Ridge(alpha=1.0)  # TODO: auto-calibrate alpha (it's easy using a scikit-learn one-liner)
     image_data = []
     cmd_vel_data = []
