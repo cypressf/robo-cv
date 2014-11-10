@@ -31,7 +31,7 @@ We created three main files:
 `cv_follower.py` contains the `Controller` class, which we use to control our neato. It loads a saved ridge regression. `Controller` subscribes to camera/image_raw. It runs extract_data(cv_image) on images as they arrive, passes the extracted vector to the ridge regression to estimate the `cmd_vel`, and then publishes the estimated cmd_vel to drive the neato.
 
 `image_processing.py` contains a function called `extract_data(cv_image)`, which takes a two-dimensional image array and returns a one-dimensional array that represents the relevant data we extract from the image using our image processing algorithm. We created several different image processing algorithms and swapped out which one `extract_data` called, depending on what we wanted to test. It also provides for Python, command line testing capability, allowing modular development and testing on single images. This meant we didn’t need a Neato or the simulator and ROS to test code. 
-## What, if any, challenges did you face along the way?
+## Challenges we faced.
 ### Rosbag files contained extraneous footage wherein the robot wasn’t moving
 When we recorded rosbag files, we had to start the robot moving immediately, and stop the recording before the robot stopped in order to avoid contaminating our training data with zero-vector cmd_vel messages. To extract relevant training data, we cropped out the zero-vector cmd_vel messages at the beginning and end of our rosbag files with some if-statements in cv_trainer.py. Further, even with a joystick remote, it’s still very challenging for a human operator to not overshoot when piloting the robot toward the target
 ### We needed to find a way to represent our image as a one-dimensional vector
